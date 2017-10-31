@@ -1,7 +1,7 @@
 package com.taotao.mapper;
 
-import com.taotao.pojo.TbContentCategory;
-import com.taotao.pojo.TbContentCategoryExample;
+import com.taotao.common.pojo.TbContentCategory;
+import com.taotao.common.pojo.TbContentCategoryExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

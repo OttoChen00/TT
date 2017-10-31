@@ -1,6 +1,6 @@
 package com.taotao.service;
 
-import com.taotao.pojo.EasyUIDataGridResult;
+import com.taotao.common.pojo.EasyUIDataGridResult;
 
 /**
  * @Author

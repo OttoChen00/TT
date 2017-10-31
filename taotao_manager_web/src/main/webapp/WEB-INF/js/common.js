@@ -22,7 +22,7 @@ Date.prototype.format = function(format){
 var TT = TAOTAO = {
 	// 编辑器参数
 	kingEditorParams : {
-		//指定上传文件参数名称
+		//指定上传文件参数名称  //相当于<input type="file" name="uploadFile"
 		filePostName  : "uploadFile",
 		//指定上传文件请求的url。
 		uploadJson : '/pic/upload',
@@ -64,26 +64,43 @@ var TT = TAOTAO = {
     },
     // 初始化图片上传组件
     initPicUpload : function(data){
+    	//类选择器 循环遍历 图片上传的标签<a>
     	$(".picFileUpload").each(function(i,e){
+    		//转成jquery对象
     		var _ele = $(e);
+    		//获取兄弟节点 标签  删除它
     		_ele.siblings("div.pics").remove();
+    		//在a标签后追加 标签 <div class="pics"><ul></ul></div>
     		_ele.after('<div class="pics"><ul></ul></div>');
     		
         	//给“上传图片按钮”绑定click事件
+    		//点击图片上传的按钮 触发事件 执行以下的业务逻辑
         	$(e).click(function(){
+        		//获取a标签所在的form表单对象   相当于$("#itemAddForm")
         		var form = $(this).parentsUntil("form").parent("form");
         		//打开图片上传窗口
+        		//加载多图片上传的插件
         		KindEditor.editor(TT.kingEditorParams).loadPlugin('multiimage',function(){
         			var editor = this;
         			editor.plugin.multiImageDialog({
-						clickFn : function(urlList) {
+        				//当点击全部插入之后触发以下的业务逻辑
+						clickFn : function(urlList) {//urlList就是返回的包括URL的POJO的列表
+							//定义数组
 							var imgArray = [];
-							KindEditor.each(urlList, function(i, data) {
+							
+							KindEditor.each(urlList, function(i, data) {//data 遍历的数据对象（error,url）
+								//添加URL到数组中
 								imgArray.push(data.url);
 								// 回显图片
+								
+								//<ul><li></li><li></li></ul>
+								
 								form.find(".pics ul").append("<li><a href='"+data.url+"' target='_blank'><img src='"+data.url+"' width='80' height='50' /></a></li>");
 							});
+							//imgArray.join(",")：遍历数组 通过“,” 拼接成String :[a.jgp,b.jgp]--->a.jpg,b.jpg
+							//把分割好的字符串放入表当中的image的隐藏域中
 							form.find("[name=image]").val(imgArray.join(","));
+							//隐藏窗口
 							editor.hideDialog();
 						}
 					});
@@ -94,15 +111,20 @@ var TT = TAOTAO = {
     
     // 初始化选择类目组件
     initItemCat : function(data){
+    	
+    	//获取商品类目的标签所在的类选择器 对象，循环遍历
     	$(".selectItemCat").each(function(i,e){
+    		//把<a标签对象转成jquery对象
     		var _ele = $(e);
     		if(data && data.cid){
     			_ele.after("<span style='margin-left:10px;'>"+data.cid+"</span>");
     		}else{
+    			//追加标签<span
     			_ele.after("<span style='margin-left:10px;'></span>");
     		}
+    		//点击商品类目选择的按钮的时候，触发事件执行以下的业务逻辑
     		_ele.unbind('click').click(function(){
-    			//创建一个div标签
+    			//创建一个div标签 给这个创建的div添加样式  再添加UL标签  <div><ul></ul></div>
     			$("<div>").css({padding:"5px"}).html("<ul>")
     			.window({
     				width:'500',
@@ -111,28 +133,38 @@ var TT = TAOTAO = {
     			    closed:true,
     			    iconCls:'icon-save',
     			    title:'选择类目',
+    			    //当打开窗口的时候触发以下的业务逻辑
     			    onOpen : function(){
+    			    	//获取当前的窗口本身对象
     			    	var _win = this;
+    			    	//在窗口下的ul标签中创建一颗树
     			    	$("ul",_win).tree({
-    			    		url:'/item/cat/list',
+    			    		url:'/item/cat/list',//参数就是id 
     			    		animate:true,
+    			    		//点击树的节点的时候触发以下的业务逻辑
     			    		onClick : function(node){
+    			    			//$(this).tree("isLeaf",node.target):两个值 一个是true ：是叶子节点  false:不是叶子节点
+    			    			//判断如果被点击的节点是叶子节点，处理以下的业务
     			    			if($(this).tree("isLeaf",node.target)){
     			    				// 填写到cid中
+    			    				//获取a标签的父标签:<td>下找到隐藏域名称cid 赋值给节点的id值
     			    				_ele.parent().find("[name=cid]").val(node.id);
     			    				// 将文本值显示，并设置标签(上边追加的<span)的cid属性为节点的id
+    			    				//<span>电子书</span>
+    			    				
     			    				_ele.next().text(node.text).attr("cid",node.id);
     			    				
+    			    				//关闭窗口
     			    				$(_win).window('close');
+    			    				
     			    				if(data && data.fun){
-    			    					alert(data);
     			    					data.fun.call(this,node);
     			    				}
     			    			}
     			    		}
     			    	});
     			    },
-    			    onClose : function(){
+    			    onClose : function(){//点击红叉的时候关闭窗口
     			    	$(this).window("destroy");
     			    }
     			}).window('open');

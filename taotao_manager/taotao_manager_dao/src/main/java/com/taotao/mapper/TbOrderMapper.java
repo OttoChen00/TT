@@ -1,7 +1,7 @@
 package com.taotao.mapper;
 
-import com.taotao.pojo.TbOrder;
-import com.taotao.pojo.TbOrderExample;
+import com.taotao.common.pojo.TbOrder;
+import com.taotao.common.pojo.TbOrderExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
